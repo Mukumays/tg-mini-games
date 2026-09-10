@@ -14,58 +14,85 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            padding: 20px 10px;
+            padding: 15px 5px;
             overflow: hidden;
             touch-action: none; 
         }
-        /* Новая панель: 3 элемента в ряд */
-        .top-panel {
+        
+        /* Главный контейнер, где всё стоит в ряд */
+        .game-wrapper {
             display: flex;
-            justify-content: space-between;
-            align-items: flex-end;
+            flex-direction: row;
+            justify-content: center;
+            align-items: stretch;
+            gap: 10px;
             width: 100%;
-            max-width: 260px; /* Слегка расширили для 3 блоков */
-            margin-bottom: 15px;
+            max-width: 380px;
         }
-        .side-box {
+
+        /* Боковые панели */
+        .side-panel {
+            display: flex;
+            flex-direction: column;
+            width: 75px; /* Ширина боковых окон */
+        }
+        .left-panel {
+            justify-content: space-between; /* HOLD сверху, статы снизу */
+        }
+        .right-panel {
+            justify-content: flex-start; /* NEXT сверху */
+        }
+
+        /* Оформление блоков (HOLD, NEXT, СТАТИСТИКА) */
+        .box {
             display: flex;
             flex-direction: column;
             align-items: center;
-        }
-        #hold-btn {
-            cursor: pointer;
-        }
-        .center-box {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            margin-bottom: 5px;
         }
         .title-text {
-            font-size: 12px;
+            font-size: 11px;
             font-weight: bold;
             color: var(--tg-theme-hint-color, #888888);
-            margin-bottom: 5px;
+            margin-bottom: 4px;
             letter-spacing: 1px;
+            text-align: center;
         }
-        #holdCanvas, #nextCanvas {
+        .canvas-box {
             background-color: #222222;
             border: 2px solid #444444;
             border-radius: 6px;
         }
-        #score {
-            font-size: 24px;
+        
+        /* Панель статистики слева внизу */
+        .stats-panel {
+            background-color: #222222;
+            border: 2px solid #444444;
+            border-radius: 6px;
+            padding: 8px 0;
+            text-align: center;
+            margin-bottom: 2px; /* Выравнивание по нижнему краю поля */
+        }
+        .stat-value {
+            font-size: 16px;
             font-weight: bold;
             color: var(--tg-theme-button-color, #3390ec);
+            margin-bottom: 8px;
         }
+        .stat-value:last-child {
+            margin-bottom: 0;
+        }
+
+        /* Главное игровое поле */
         canvas#gameCanvas {
             background-color: #000000;
             border: 2px solid var(--tg-theme-button-color, #3390ec);
             border-radius: 6px;
             box-shadow: 0 0 15px rgba(51, 144, 236, 0.2);
+            /* Строго 10x20 клеток (если клетка 20px, то размер 200x400) */
         }
+
         .back-btn {
-            margin-top: 25px;
+            margin-top: 20px;
             color: var(--tg-theme-hint-color, #888888);
             background: none;
             border: none;
@@ -77,28 +104,40 @@
 </head>
 <body>
 
-    <div class="top-panel">
-        <!-- Блок HOLD (слева) -->
-        <div class="side-box" id="hold-btn">
-            <div class="title-text">HOLD</div>
-            <canvas id="holdCanvas" width="60" height="60"></canvas>
-        </div>
-        
-        <!-- Блок СЧЕТ (по центру) -->
-        <div class="center-box">
-            <div class="title-text">СЧЕТ</div>
-            <div id="score">0</div>
+    <div class="game-wrapper">
+        <!-- ЛЕВАЯ ПАНЕЛЬ -->
+        <div class="side-panel left-panel">
+            <div class="box" id="hold-btn" style="cursor: pointer;">
+                <div class="title-text">HOLD</div>
+                <canvas id="holdCanvas" class="canvas-box" width="70" height="70"></canvas>
+            </div>
+            
+            <div class="stats-panel">
+                <div class="title-text">SCORE</div>
+                <div id="score" class="stat-value">0</div>
+                
+                <div class="title-text">LEVEL</div>
+                <div id="level" class="stat-value">1</div>
+                
+                <div class="title-text">LINES</div>
+                <div id="lines" class="stat-value">0</div>
+            </div>
         </div>
 
-        <!-- Блок NEXT (справа) -->
-        <div class="side-box">
-            <div class="title-text">NEXT</div>
-            <canvas id="nextCanvas" width="60" height="60"></canvas>
+        <!-- ЦЕНТР (ИГРОВОЕ ПОЛЕ) -->
+        <div class="center-panel">
+            <canvas id="gameCanvas" width="200" height="400"></canvas>
+        </div>
+
+        <!-- ПРАВАЯ ПАНЕЛЬ -->
+        <div class="side-panel right-panel">
+            <div class="box">
+                <div class="title-text">NEXT</div>
+                <!-- Высота 210px, чтобы влезли 3 фигуры -->
+                <canvas id="nextCanvas" class="canvas-box" width="70" height="210"></canvas>
+            </div>
         </div>
     </div>
-
-    <!-- Главное игровое поле -->
-    <canvas id="gameCanvas" width="200" height="400"></canvas>
 
     <button class="back-btn" onclick="window.location.href='index.html'">Вернуться в меню</button>
 
