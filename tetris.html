@@ -14,43 +14,40 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            padding: 15px 5px;
+            padding: 10px 5px; /* Уменьшили отступ сверху для экономии места */
             overflow: hidden;
             touch-action: none; 
         }
         
-        /* Главный контейнер, где всё стоит в ряд */
         .game-wrapper {
             display: flex;
             flex-direction: row;
             justify-content: center;
             align-items: stretch;
-            gap: 10px;
+            gap: 8px; /* Немного сблизили колонки */
             width: 100%;
-            max-width: 380px;
+            max-width: 400px;
         }
 
-        /* Боковые панели */
         .side-panel {
             display: flex;
             flex-direction: column;
-            width: 75px; /* Ширина боковых окон */
+            width: 55px; /* Сделали боковые окна у́же */
         }
         .left-panel {
-            justify-content: space-between; /* HOLD сверху, статы снизу */
+            justify-content: space-between;
         }
         .right-panel {
-            justify-content: flex-start; /* NEXT сверху */
+            justify-content: flex-start;
         }
 
-        /* Оформление блоков (HOLD, NEXT, СТАТИСТИКА) */
         .box {
             display: flex;
             flex-direction: column;
             align-items: center;
         }
         .title-text {
-            font-size: 11px;
+            font-size: 10px;
             font-weight: bold;
             color: var(--tg-theme-hint-color, #888888);
             margin-bottom: 4px;
@@ -63,17 +60,16 @@
             border-radius: 6px;
         }
         
-        /* Панель статистики слева внизу */
         .stats-panel {
             background-color: #222222;
             border: 2px solid #444444;
             border-radius: 6px;
             padding: 8px 0;
             text-align: center;
-            margin-bottom: 2px; /* Выравнивание по нижнему краю поля */
+            margin-bottom: 2px;
         }
         .stat-value {
-            font-size: 16px;
+            font-size: 14px;
             font-weight: bold;
             color: var(--tg-theme-button-color, #3390ec);
             margin-bottom: 8px;
@@ -82,17 +78,15 @@
             margin-bottom: 0;
         }
 
-        /* Главное игровое поле */
         canvas#gameCanvas {
             background-color: #000000;
             border: 2px solid var(--tg-theme-button-color, #3390ec);
             border-radius: 6px;
             box-shadow: 0 0 15px rgba(51, 144, 236, 0.2);
-            /* Строго 10x20 клеток (если клетка 20px, то размер 200x400) */
         }
 
         .back-btn {
-            margin-top: 20px;
+            margin-top: 15px;
             color: var(--tg-theme-hint-color, #888888);
             background: none;
             border: none;
@@ -109,7 +103,8 @@
         <div class="side-panel left-panel">
             <div class="box" id="hold-btn" style="cursor: pointer;">
                 <div class="title-text">HOLD</div>
-                <canvas id="holdCanvas" class="canvas-box" width="70" height="70"></canvas>
+                <!-- Уменьшили окошко до 50х50 -->
+                <canvas id="holdCanvas" class="canvas-box" width="50" height="50"></canvas>
             </div>
             
             <div class="stats-panel">
@@ -126,15 +121,16 @@
 
         <!-- ЦЕНТР (ИГРОВОЕ ПОЛЕ) -->
         <div class="center-panel">
-            <canvas id="gameCanvas" width="200" height="400"></canvas>
+            <!-- Увеличили поле: 240х480 (это ровно 10х20 клеток, каждая по 24 пикселя) -->
+            <canvas id="gameCanvas" width="240" height="480"></canvas>
         </div>
 
         <!-- ПРАВАЯ ПАНЕЛЬ -->
         <div class="side-panel right-panel">
             <div class="box">
                 <div class="title-text">NEXT</div>
-                <!-- Высота 210px, чтобы влезли 3 фигуры -->
-                <canvas id="nextCanvas" class="canvas-box" width="70" height="210"></canvas>
+                <!-- Уменьшили ширину и высоту под 3 маленькие фигуры -->
+                <canvas id="nextCanvas" class="canvas-box" width="50" height="150"></canvas>
             </div>
         </div>
     </div>
