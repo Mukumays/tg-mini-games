@@ -3,27 +3,64 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Мои Игры</title>
-    <!-- Подключаем скрипт Телеграма -->
+    <title>Игровой Хаб</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         body {
             font-family: sans-serif;
             text-align: center;
-            margin-top: 50px;
-            background-color: var(--tg-theme-bg-color, #ffffff);
+            margin: 0;
+            padding: 20px;
+            /* Цвета автоматически берутся из темы Телеграма пользователя */
+            background-color: var(--tg-theme-bg-color, #f4f4f4);
             color: var(--tg-theme-text-color, #000000);
+        }
+        h1 {
+            font-size: 24px;
+            margin-bottom: 5px;
+            margin-top: 20px;
+        }
+        p {
+            font-size: 15px;
+            color: var(--tg-theme-hint-color, #888888);
+            margin-bottom: 30px;
+        }
+        .games-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 15px;
+        }
+        .game-btn {
+            background-color: var(--tg-theme-button-color, #3390ec);
+            color: var(--tg-theme-button-text-color, #ffffff);
+            border: none;
+            border-radius: 12px;
+            padding: 16px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        .game-btn:active {
+            transform: scale(0.98);
         }
     </style>
 </head>
 <body>
-    <h1>Привет! Это игровой хаб канала.</h1>
-    <p>Скоро здесь появятся игры.</p>
+    <h1>🎮 Игровой хаб</h1>
+    <p>Выбери игру и попробуй побить рекорд админа!</p>
+
+    <div class="games-grid">
+        <button class="game-btn" onclick="alert('Скоро тут будет Тетрис!')">🧩 Тетрис</button>
+        <button class="game-btn" onclick="alert('Скоро тут будет Сапер!')">💣 Сапер</button>
+        <button class="game-btn" onclick="alert('Скоро тут будет Змейка!')">🐍 Змейка</button>
+        <button class="game-btn" onclick="alert('Скоро тут будет Судоку!')">🔢 Судоку</button>
+    </div>
 
     <script>
-        // Говорим Телеграму развернуть приложение на весь экран
         let tg = window.Telegram.WebApp;
-        tg.expand(); 
+        tg.expand(); // Открываем приложение на весь экран
+        tg.ready();  // Сообщаем Телеграму, что приложение готово
     </script>
 </body>
 </html>
