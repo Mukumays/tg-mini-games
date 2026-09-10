@@ -15,23 +15,31 @@
             flex-direction: column;
             align-items: center;
             padding: 20px 10px;
-            /* Важно: блокируем стандартные свайпы и прокрутку браузера */
             overflow: hidden;
             touch-action: none; 
         }
+        /* Новая панель: 3 элемента в ряд */
         .top-panel {
             display: flex;
             justify-content: space-between;
-            align-items: flex-start;
+            align-items: flex-end;
             width: 100%;
-            max-width: 240px;
+            max-width: 260px; /* Слегка расширили для 3 блоков */
             margin-bottom: 15px;
         }
-        .hold-container {
+        .side-box {
             display: flex;
             flex-direction: column;
             align-items: center;
+        }
+        #hold-btn {
             cursor: pointer;
+        }
+        .center-box {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-bottom: 5px;
         }
         .title-text {
             font-size: 12px;
@@ -40,16 +48,13 @@
             margin-bottom: 5px;
             letter-spacing: 1px;
         }
-        #holdCanvas {
+        #holdCanvas, #nextCanvas {
             background-color: #222222;
             border: 2px solid #444444;
             border-radius: 6px;
         }
-        .score-box {
-            text-align: right;
-        }
         #score {
-            font-size: 22px;
+            font-size: 24px;
             font-weight: bold;
             color: var(--tg-theme-button-color, #3390ec);
         }
@@ -73,16 +78,22 @@
 <body>
 
     <div class="top-panel">
-        <!-- Кнопка/окно для отложенной фигуры -->
-        <div class="hold-container" id="hold-btn">
+        <!-- Блок HOLD (слева) -->
+        <div class="side-box" id="hold-btn">
             <div class="title-text">HOLD</div>
             <canvas id="holdCanvas" width="60" height="60"></canvas>
         </div>
         
-        <!-- Счет -->
-        <div class="score-box">
+        <!-- Блок СЧЕТ (по центру) -->
+        <div class="center-box">
             <div class="title-text">СЧЕТ</div>
             <div id="score">0</div>
+        </div>
+
+        <!-- Блок NEXT (справа) -->
+        <div class="side-box">
+            <div class="title-text">NEXT</div>
+            <canvas id="nextCanvas" width="60" height="60"></canvas>
         </div>
     </div>
 
@@ -92,11 +103,9 @@
     <button class="back-btn" onclick="window.location.href='index.html'">Вернуться в меню</button>
 
     <script>
-        // Подключаем Телеграм
         let tg = window.Telegram.WebApp;
         tg.expand();
         
-        // --- ЗАГЛУШКИ ДЕЙСТВИЙ (позже сюда добавим игровую логику) ---
         function moveLeft() { console.log('Влево'); }
         function moveRight() { console.log('Вправо'); }
         function moveDown() { console.log('Вниз (плавно)'); }
@@ -104,13 +113,10 @@
         function rotate() { console.log('Поворот'); }
         function hold() { alert('Фигура отправлена в HOLD!'); }
 
-        // --- УПРАВЛЕНИЕ ДЛЯ ПК (Клавиатура) ---
         document.addEventListener('keydown', function(event) {
-            // Блокируем прокрутку страницы при нажатии стрелок и пробела
             if(["Space", "ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight"].indexOf(event.code) > -1) {
                 event.preventDefault();
             }
-
             let key = event.key.toLowerCase();
             if (key === 'arrowleft' || key === 'a') moveLeft();
             if (key === 'arrowright' || key === 'd') moveRight();
@@ -120,7 +126,6 @@
             if (key === 'c') hold();
         });
 
-        // --- УПРАВЛЕНИЕ ДЛЯ ТЕЛЕФОНА (Свайпы и тапы) ---
         let touchStartX = 0;
         let touchStartY = 0;
 
@@ -130,7 +135,6 @@
         }, false);
 
         document.addEventListener('touchend', function(event) {
-            // Игнорируем свайпы, если нажали на кнопку "Вернуться в меню" или окно HOLD
             if (event.target.tagName.toLowerCase() === 'button' || event.target.closest('#hold-btn')) return;
 
             let touchEndX = event.changedTouches[0].screenX;
@@ -139,25 +143,20 @@
             let dx = touchEndX - touchStartX;
             let dy = touchEndY - touchStartY;
             
-            // Если палец почти не сдвинулся — это просто нажатие (тап) для поворота
             if (Math.abs(dx) < 15 && Math.abs(dy) < 15) {
                 rotate();
                 return;
             }
 
-            // Если это свайп, определяем его направление
             if (Math.abs(dx) > Math.abs(dy)) {
-                if (dx > 30) moveRight(); // Свайп вправо
-                else if (dx < -30) moveLeft(); // Свайп влево
+                if (dx > 30) moveRight(); 
+                else if (dx < -30) moveLeft(); 
             } else {
-                if (dy > 30) hardDrop(); // Резкий свайп вниз
+                if (dy > 30) hardDrop(); 
             }
         }, false);
 
-        // Нажатие на окошко HOLD пальцем/мышкой
-        document.getElementById('hold-btn').addEventListener('click', () => {
-            hold();
-        });
+        document.getElementById('hold-btn').addEventListener('click', hold);
     </script>
 </body>
 </html>
