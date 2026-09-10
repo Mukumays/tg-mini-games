@@ -11,12 +11,16 @@
             color: var(--tg-theme-text-color, #ffffff);
             font-family: sans-serif;
             margin: 0;
+            padding: 0;
+            /* Главные изменения для центрирования: */
+            min-height: 100vh;
             display: flex;
             flex-direction: column;
             align-items: center;
-            padding: 10px 5px; /* Уменьшили отступ сверху для экономии места */
+            justify-content: center; 
             overflow: hidden;
             touch-action: none; 
+            box-sizing: border-box;
         }
         
         .game-wrapper {
@@ -24,7 +28,7 @@
             flex-direction: row;
             justify-content: center;
             align-items: stretch;
-            gap: 8px; /* Немного сблизили колонки */
+            gap: 8px; 
             width: 100%;
             max-width: 400px;
         }
@@ -32,7 +36,7 @@
         .side-panel {
             display: flex;
             flex-direction: column;
-            width: 55px; /* Сделали боковые окна у́же */
+            width: 55px; 
         }
         .left-panel {
             justify-content: space-between;
@@ -86,7 +90,7 @@
         }
 
         .back-btn {
-            margin-top: 15px;
+            margin-top: 25px;
             color: var(--tg-theme-hint-color, #888888);
             background: none;
             border: none;
@@ -103,7 +107,6 @@
         <div class="side-panel left-panel">
             <div class="box" id="hold-btn" style="cursor: pointer;">
                 <div class="title-text">HOLD</div>
-                <!-- Уменьшили окошко до 50х50 -->
                 <canvas id="holdCanvas" class="canvas-box" width="50" height="50"></canvas>
             </div>
             
@@ -121,7 +124,6 @@
 
         <!-- ЦЕНТР (ИГРОВОЕ ПОЛЕ) -->
         <div class="center-panel">
-            <!-- Увеличили поле: 240х480 (это ровно 10х20 клеток, каждая по 24 пикселя) -->
             <canvas id="gameCanvas" width="240" height="480"></canvas>
         </div>
 
@@ -129,7 +131,6 @@
         <div class="side-panel right-panel">
             <div class="box">
                 <div class="title-text">NEXT</div>
-                <!-- Уменьшили ширину и высоту под 3 маленькие фигуры -->
                 <canvas id="nextCanvas" class="canvas-box" width="50" height="150"></canvas>
             </div>
         </div>
