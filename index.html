@@ -11,56 +11,84 @@
             text-align: center;
             margin: 0;
             padding: 20px;
-            /* Цвета автоматически берутся из темы Телеграма пользователя */
             background-color: var(--tg-theme-bg-color, #f4f4f4);
             color: var(--tg-theme-text-color, #000000);
         }
         h1 {
-            font-size: 24px;
+            font-size: 26px;
             margin-bottom: 5px;
-            margin-top: 20px;
+            margin-top: 10px;
         }
         p {
-            font-size: 15px;
+            font-size: 14px;
             color: var(--tg-theme-hint-color, #888888);
             margin-bottom: 30px;
         }
+        /* Делаем сетку 2 на 2 */
         .games-grid {
             display: grid;
-            grid-template-columns: 1fr;
+            grid-template-columns: repeat(2, 1fr);
             gap: 15px;
+            padding: 0 10px;
         }
+        /* Стили квадратных кнопок */
         .game-btn {
             background-color: var(--tg-theme-button-color, #3390ec);
             color: var(--tg-theme-button-text-color, #ffffff);
             border: none;
-            border-radius: 12px;
-            padding: 16px;
-            font-size: 18px;
-            font-weight: bold;
+            border-radius: 16px;
+            padding: 25px 10px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
             cursor: pointer;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            /* Тень для объема */
+            box-shadow: 0 6px 0 rgba(0,0,0,0.2); 
+            transition: transform 0.1s, box-shadow 0.1s;
         }
+        /* Эффект физического нажатия */
         .game-btn:active {
-            transform: scale(0.98);
+            transform: translateY(6px);
+            box-shadow: 0 0 0 transparent;
+        }
+        .icon {
+            font-size: 45px;
+            margin-bottom: 15px;
+        }
+        .title {
+            font-size: 16px;
+            font-weight: bold;
         }
     </style>
 </head>
 <body>
-    <h1>🎮 Игровой хаб</h1>
+    <h1>🕹️ Игровой хаб</h1>
     <p>Выбери игру и попробуй побить рекорд админа!</p>
 
     <div class="games-grid">
-        <button class="game-btn" onclick="alert('Скоро тут будет Тетрис!')">🧩 Тетрис</button>
-        <button class="game-btn" onclick="alert('Скоро тут будет Сапер!')">💣 Сапер</button>
-        <button class="game-btn" onclick="alert('Скоро тут будет Змейка!')">🐍 Змейка</button>
-        <button class="game-btn" onclick="alert('Скоро тут будет Судоку!')">🔢 Судоку</button>
+        <div class="game-btn" onclick="alert('Скоро тут будет Тетрис!')">
+            <span class="icon">🧩</span>
+            <span class="title">Тетрис</span>
+        </div>
+        <div class="game-btn" onclick="alert('Скоро тут будет Сапер!')">
+            <span class="icon">💣</span>
+            <span class="title">Сапер</span>
+        </div>
+        <div class="game-btn" onclick="alert('Скоро тут будет Судоку!')">
+            <span class="icon">🔢</span>
+            <span class="title">Судоку</span>
+        </div>
+        <div class="game-btn" onclick="alert('Скоро тут будет Змейка!')">
+            <span class="icon">🐍</span>
+            <span class="title">Змейка</span>
+        </div>
     </div>
 
     <script>
         let tg = window.Telegram.WebApp;
-        tg.expand(); // Открываем приложение на весь экран
-        tg.ready();  // Сообщаем Телеграму, что приложение готово
+        tg.expand(); 
+        tg.ready();  
     </script>
 </body>
 </html>
