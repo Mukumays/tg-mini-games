@@ -145,7 +145,6 @@
         // --- НАСТРОЙКА ИГРОВОГО ПОЛЯ ---
         const canvas = document.getElementById('gameCanvas');
         const context = canvas.getContext('2d');
-        // Наше поле 10x20. Размер канваса 240x480, значит 1 клетка = 24 пикселя
         context.scale(24, 24); 
 
         function createMatrix(w, h) {
@@ -159,24 +158,59 @@
 
         const colors = [
             null,
-            '#FF0D72', // 1 - T (Розовый)
-            '#0DC2FF', // 2 - I (Голубой)
-            '#0DFF72', // 3 - S (Зеленый)
-            '#F538FF', // 4 - Z (Фиолетовый)
-            '#FF8E0D', // 5 - L (Оранжевый)
-            '#FFE138', // 6 - J (Желтый)
-            '#3877FF'  // 7 - O (Синий)
+            '#FF0D72', // 1 - T
+            '#0DC2FF', // 2 - I
+            '#0DFF72', // 3 - S
+            '#F538FF', // 4 - Z
+            '#FF8E0D', // 5 - L
+            '#FFE138', // 6 - J
+            '#3877FF'  // 7 - O
         ];
 
         function createPiece(type) {
             if (type === 'T') return [[0, 0, 0], [1, 1, 1], [0, 1, 0]];
-            // Остальные фигуры добавим позже!
+            // Чуть позже добавим сюда остальные фигуры
         }
 
         const player = {
             pos: {x: 3, y: 0},
             matrix: createPiece('T'),
         };
+
+        // --- НОВОЕ: ФИЗИКА И СТОЛКНОВЕНИЯ ---
+        
+        // Функция проверяет, врезались ли мы во что-то
+        function collide(arena, player) {
+            const m = player.matrix;
+            const o = player.pos;
+            for (let y = 0; y < m.length; ++y) {
+                for (let x = 0; x < m[y].length; ++x) {
+                    if (m[y][x] !== 0 &&
+                       (arena[y + o.y] && arena[y + o.y][x + o.x]) !== 0) {
+                        return true;
+                    }
+                }
+            }
+            return false;
+        }
+
+        // Функция "приклеивает" упавшую фигуру к полю
+        function merge(arena, player) {
+            player.matrix.forEach((row, y) => {
+                row.forEach((value, x) => {
+                    if (value !== 0) {
+                        arena[y + player.pos.y][x + player.pos.x] = value;
+                    }
+                });
+            });
+        }
+
+        // Возвращаем фигуру наверх (пока просто создаем новую Т-фигуру)
+        function playerReset() {
+            player.matrix = createPiece('T');
+            player.pos.y = 0;
+            player.pos.x = Math.floor(arena[0].length / 2) - Math.floor(player.matrix[0].length / 2);
+        }
 
         // --- ОТРИСОВКА ---
         function drawMatrix(matrix, offset) {
@@ -200,9 +234,32 @@
             drawMatrix(player.matrix, player.pos);
         }
 
+        // --- УПРАВЛЕНИЕ С УЧЕТОМ СТЕН ---
+        function moveLeft() { 
+            player.pos.x--; 
+            if (collide(arena, player)) player.pos.x++; // Если стена - отменяем шаг
+        }
+        function moveRight() { 
+            player.pos.x++; 
+            if (collide(arena, player)) player.pos.x--; // Если стена - отменяем шаг
+        }
+        function moveDown() { 
+            player.pos.y++; 
+            if (collide(arena, player)) {
+                player.pos.y--; // Поднимаем на пиксель вверх (чтобы не застряла в полу)
+                merge(arena, player); // Замораживаем
+                playerReset(); // Бросаем новую
+            }
+            dropCounter = 0; 
+        }
+        
+        function hardDrop() { console.log('Резко вниз!'); }
+        function rotate() { console.log('Поворот'); }
+        function hold() { alert('Фигура отправлена в HOLD!'); }
+
         // --- ИГРОВОЙ ЦИКЛ (ГРАВИТАЦИЯ) ---
         let dropCounter = 0;
-        let dropInterval = 1000; // Падает раз в 1 секунду
+        let dropInterval = 1000; 
         let lastTime = 0;
 
         function update(time = 0) {
@@ -211,25 +268,14 @@
             dropCounter += deltaTime;
 
             if (dropCounter > dropInterval) {
-                player.pos.y++; // Фигура падает вниз
-                dropCounter = 0;
+                moveDown(); // Теперь используем нашу умную функцию с проверкой пола
             }
 
             draw();
             requestAnimationFrame(update);
         }
 
-        // --- УПРАВЛЕНИЕ (СВЯЗАЛИ С ФИГУРОЙ) ---
-        function moveLeft() { player.pos.x--; }
-        function moveRight() { player.pos.x++; }
-        function moveDown() { 
-            player.pos.y++; 
-            dropCounter = 0; // Сбрасываем таймер падения, чтобы не было рывков
-        }
-        function hardDrop() { console.log('Резко вниз! (логику добавим позже)'); }
-        function rotate() { console.log('Поворот (логику добавим позже)'); }
-        function hold() { alert('Фигура отправлена в HOLD!'); }
-
+        // Слушатели клавиатуры и свайпов оставляем как были
         document.addEventListener('keydown', function(event) {
             if(["Space", "ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight"].indexOf(event.code) > -1) {
                 event.preventDefault();
