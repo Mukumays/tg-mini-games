@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Тетрис</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <style>
+        body {
+            background-color: var(--tg-theme-bg-color, #111111);
+            color: var(--tg-theme-text-color, #ffffff);
+            font-family: sans-serif;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px 10px;
+            /* Важно: блокируем стандартные свайпы и прокрутку браузера */
+            overflow: hidden;
+            touch-action: none; 
+        }
+        .top-panel {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            width: 100%;
+            max-width: 240px;
+            margin-bottom: 15px;
+        }
+        .hold-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            cursor: pointer;
+        }
+        .title-text {
+            font-size: 12px;
+            font-weight: bold;
+            color: var(--tg-theme-hint-color, #888888);
+            margin-bottom: 5px;
+            letter-spacing: 1px;
+        }
+        #holdCanvas {
+            background-color: #222222;
+            border: 2px solid #444444;
+            border-radius: 6px;
+        }
+        .score-box {
+            text-align: right;
+        }
+        #score {
+            font-size: 22px;
+            font-weight: bold;
+            color: var(--tg-theme-button-color, #3390ec);
+        }
+        canvas#gameCanvas {
+            background-color: #000000;
+            border: 2px solid var(--tg-theme-button-color, #3390ec);
+            border-radius: 6px;
+            box-shadow: 0 0 15px rgba(51, 144, 236, 0.2);
+        }
+        .back-btn {
+            margin-top: 25px;
+            color: var(--tg-theme-hint-color, #888888);
+            background: none;
+            border: none;
+            font-size: 16px;
+            text-decoration: underline;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="top-panel">
+        <!-- Кнопка/окно для отложенной фигуры -->
+        <div class="hold-container" id="hold-btn">
+            <div class="title-text">HOLD</div>
+            <canvas id="holdCanvas" width="60" height="60"></canvas>
+        </div>
+        
+        <!-- Счет -->
+        <div class="score-box">
+            <div class="title-text">СЧЕТ</div>
+            <div id="score">0</div>
+        </div>
+    </div>
+
+    <!-- Главное игровое поле -->
+    <canvas id="gameCanvas" width="200" height="400"></canvas>
+
+    <button class="back-btn" onclick="window.location.href='index.html'">Вернуться в меню</button>
+
+    <script>
+        // Подключаем Телеграм
+        let tg = window.Telegram.WebApp;
+        tg.expand();
+        
+        // --- ЗАГЛУШКИ ДЕЙСТВИЙ (позже сюда добавим игровую логику) ---
+        function moveLeft() { console.log('Влево'); }
+        function moveRight() { console.log('Вправо'); }
+        function moveDown() { console.log('Вниз (плавно)'); }
+        function hardDrop() { console.log('Резко вниз!'); }
+        function rotate() { console.log('Поворот'); }
+        function hold() { alert('Фигура отправлена в HOLD!'); }
+
+        // --- УПРАВЛЕНИЕ ДЛЯ ПК (Клавиатура) ---
+        document.addEventListener('keydown', function(event) {
+            // Блокируем прокрутку страницы при нажатии стрелок и пробела
+            if(["Space", "ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight"].indexOf(event.code) > -1) {
+                event.preventDefault();
+            }
+
+            let key = event.key.toLowerCase();
+            if (key === 'arrowleft' || key === 'a') moveLeft();
+            if (key === 'arrowright' || key === 'd') moveRight();
+            if (key === 'arrowdown' || key === 's') moveDown();
+            if (key === 'arrowup' || key === 'w' || key === 'z') rotate();
+            if (event.code === 'Space') hardDrop();
+            if (key === 'c') hold();
+        });
+
+        // --- УПРАВЛЕНИЕ ДЛЯ ТЕЛЕФОНА (Свайпы и тапы) ---
+        let touchStartX = 0;
+        let touchStartY = 0;
+
+        document.addEventListener('touchstart', function(event) {
+            touchStartX = event.changedTouches[0].screenX;
+            touchStartY = event.changedTouches[0].screenY;
+        }, false);
+
+        document.addEventListener('touchend', function(event) {
+            // Игнорируем свайпы, если нажали на кнопку "Вернуться в меню" или окно HOLD
+            if (event.target.tagName.toLowerCase() === 'button' || event.target.closest('#hold-btn')) return;
+
+            let touchEndX = event.changedTouches[0].screenX;
+            let touchEndY = event.changedTouches[0].screenY;
+            
+            let dx = touchEndX - touchStartX;
+            let dy = touchEndY - touchStartY;
+            
+            // Если палец почти не сдвинулся — это просто нажатие (тап) для поворота
+            if (Math.abs(dx) < 15 && Math.abs(dy) < 15) {
+                rotate();
+                return;
+            }
+
+            // Если это свайп, определяем его направление
+            if (Math.abs(dx) > Math.abs(dy)) {
+                if (dx > 30) moveRight(); // Свайп вправо
+                else if (dx < -30) moveLeft(); // Свайп влево
+            } else {
+                if (dy > 30) hardDrop(); // Резкий свайп вниз
+            }
+        }, false);
+
+        // Нажатие на окошко HOLD пальцем/мышкой
+        document.getElementById('hold-btn').addEventListener('click', () => {
+            hold();
+        });
+    </script>
+</body>
+</html>
