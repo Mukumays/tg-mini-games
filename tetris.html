@@ -141,12 +141,93 @@
     <script>
         let tg = window.Telegram.WebApp;
         tg.expand();
-        
-        function moveLeft() { console.log('Влево'); }
-        function moveRight() { console.log('Вправо'); }
-        function moveDown() { console.log('Вниз (плавно)'); }
-        function hardDrop() { console.log('Резко вниз!'); }
-        function rotate() { console.log('Поворот'); }
+
+        // --- НАСТРОЙКА ИГРОВОГО ПОЛЯ ---
+        const canvas = document.getElementById('gameCanvas');
+        const context = canvas.getContext('2d');
+        // Наше поле 10x20. Размер канваса 240x480, значит 1 клетка = 24 пикселя
+        context.scale(24, 24); 
+
+        function createMatrix(w, h) {
+            const matrix = [];
+            while (h--) {
+                matrix.push(new Array(w).fill(0));
+            }
+            return matrix;
+        }
+        const arena = createMatrix(10, 20);
+
+        const colors = [
+            null,
+            '#FF0D72', // 1 - T (Розовый)
+            '#0DC2FF', // 2 - I (Голубой)
+            '#0DFF72', // 3 - S (Зеленый)
+            '#F538FF', // 4 - Z (Фиолетовый)
+            '#FF8E0D', // 5 - L (Оранжевый)
+            '#FFE138', // 6 - J (Желтый)
+            '#3877FF'  // 7 - O (Синий)
+        ];
+
+        function createPiece(type) {
+            if (type === 'T') return [[0, 0, 0], [1, 1, 1], [0, 1, 0]];
+            // Остальные фигуры добавим позже!
+        }
+
+        const player = {
+            pos: {x: 3, y: 0},
+            matrix: createPiece('T'),
+        };
+
+        // --- ОТРИСОВКА ---
+        function drawMatrix(matrix, offset) {
+            matrix.forEach((row, y) => {
+                row.forEach((value, x) => {
+                    if (value !== 0) {
+                        context.fillStyle = colors[value];
+                        context.fillRect(x + offset.x, y + offset.y, 1, 1);
+                        context.lineWidth = 0.05;
+                        context.strokeStyle = 'black';
+                        context.strokeRect(x + offset.x, y + offset.y, 1, 1);
+                    }
+                });
+            });
+        }
+
+        function draw() {
+            context.fillStyle = '#000';
+            context.fillRect(0, 0, canvas.width, canvas.height);
+            drawMatrix(arena, {x: 0, y: 0});
+            drawMatrix(player.matrix, player.pos);
+        }
+
+        // --- ИГРОВОЙ ЦИКЛ (ГРАВИТАЦИЯ) ---
+        let dropCounter = 0;
+        let dropInterval = 1000; // Падает раз в 1 секунду
+        let lastTime = 0;
+
+        function update(time = 0) {
+            const deltaTime = time - lastTime;
+            lastTime = time;
+            dropCounter += deltaTime;
+
+            if (dropCounter > dropInterval) {
+                player.pos.y++; // Фигура падает вниз
+                dropCounter = 0;
+            }
+
+            draw();
+            requestAnimationFrame(update);
+        }
+
+        // --- УПРАВЛЕНИЕ (СВЯЗАЛИ С ФИГУРОЙ) ---
+        function moveLeft() { player.pos.x--; }
+        function moveRight() { player.pos.x++; }
+        function moveDown() { 
+            player.pos.y++; 
+            dropCounter = 0; // Сбрасываем таймер падения, чтобы не было рывков
+        }
+        function hardDrop() { console.log('Резко вниз! (логику добавим позже)'); }
+        function rotate() { console.log('Поворот (логику добавим позже)'); }
         function hold() { alert('Фигура отправлена в HOLD!'); }
 
         document.addEventListener('keydown', function(event) {
@@ -193,6 +274,9 @@
         }, false);
 
         document.getElementById('hold-btn').addEventListener('click', hold);
+
+        // СТАРТ ИГРЫ!
+        update();
     </script>
 </body>
 </html>
